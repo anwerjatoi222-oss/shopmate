@@ -8,7 +8,7 @@ import {
     TextInput,
     View,
 } from "react-native";
-import { mockProducts } from "../data/mockProducts";
+import { mockProducts } from "../../data/mockProducts";
 
 export default function Products() {
   const router = useRouter();
@@ -100,4 +100,5 @@ const styles = StyleSheet.create({
 },
 addBtn: { backgroundColor: "#16a34a", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
 addBtnText: { color: "#fff", fontWeight: "600" },
+
 });
