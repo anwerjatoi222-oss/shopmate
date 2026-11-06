@@ -5,13 +5,6 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Pressable
-          style={styles.button}
-          onPress={() => router.push("/products")}
-        >
-          <Text style={styles.buttonText}>Products</Text>
-        </Pressable>
-
         <Text style={styles.cardLabel}>Todays Sale</Text>
         <Text style={styles.cardValue}>Rs. 12,500</Text>
       </View>
@@ -21,10 +14,13 @@ export default function Index() {
           <Text style={styles.cardLabel}>Products</Text>
           <Text style={styles.cardValue}>48</Text>
         </View>
-        <View style={[styles.card, styles.half]}>
+        <Pressable
+          style={[styles.card, styles.half]}
+          onPress={() => router.navigate("/products")}
+        >
           <Text style={styles.cardLabel}>Low stock</Text>
           <Text style={[styles.cardValue, styles.warning]}>5</Text>
-        </View>
+        </Pressable>
       </View>
     </View>
   );
@@ -60,5 +56,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });

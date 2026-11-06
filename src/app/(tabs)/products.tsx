@@ -1,12 +1,12 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    FlatList,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { mockProducts } from "../../data/mockProducts";
 
@@ -20,16 +20,15 @@ export default function Products() {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.back}>← Back</Text>
-      </Pressable>
-
       <View style={styles.headerRow}>
-  <Text style={styles.heading}>Products</Text>
-  <Pressable style={styles.addBtn} onPress={() => router.push("/add-product")}>
-    <Text style={styles.addBtnText}>+ Add</Text>
-  </Pressable>
-</View>
+        <Text style={styles.heading}>Products</Text>
+        <Pressable
+          style={styles.addBtn}
+          onPress={() => router.push("/add-product")}
+        >
+          <Text style={styles.addBtnText}>+ Add</Text>
+        </Pressable>
+      </View>
 
       <TextInput
         style={styles.input}
@@ -70,7 +69,6 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 56,
   },
-  back: { color: "#16a34a", fontSize: 16, marginBottom: 8 },
   heading: { fontSize: 28, fontWeight: "bold", marginBottom: 12 },
   input: {
     backgroundColor: "#fff",
@@ -93,12 +91,16 @@ const styles = StyleSheet.create({
   low: { color: "#dc2626" },
   empty: { textAlign: "center", color: "#6b7280", marginTop: 24 },
   headerRow: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: 12,
-},
-addBtn: { backgroundColor: "#16a34a", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
-addBtnText: { color: "#fff", fontWeight: "600" },
-
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  addBtn: {
+    backgroundColor: "#16a34a",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  addBtnText: { color: "#fff", fontWeight: "600" },
 });
