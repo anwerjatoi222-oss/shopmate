@@ -1,6 +1,7 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
@@ -8,13 +9,31 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { mockProducts } from "../../data/mockProducts";
+import { supabase } from "../../lib/supabase";
+import { Product } from "../../types/product";
 
 export default function Products() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+const [loading, setLoading] = useState(true);
 
-  const filtered = mockProducts.filter((p) =>
+useFocusEffect(
+  useCallback(() => {
+    const load = async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("name");
+      if (error) console.log("Supabase error:", error.message);
+      else setProducts(data as Product[]);
+      setLoading(false);
+    };
+    load();
+  }, [])
+);
+
+  const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -36,6 +55,7 @@ export default function Products() {
         value={search}
         onChangeText={setSearch}
       />
+      {loading && <ActivityIndicator size="large" color="#16a34a" />}
 
       <FlatList
         data={filtered}
@@ -44,7 +64,7 @@ export default function Products() {
           <Text style={styles.empty}>Koi product nahi mila</Text>
         }
         renderItem={({ item }) => {
-          const isLow = item.stock <= item.lowStockLimit;
+          const isLow = item.stock <= item.low_stock_limit;
           return (
             <View style={styles.card}>
               <View style={{ flex: 1 }}>

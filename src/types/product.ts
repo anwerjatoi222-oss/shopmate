@@ -3,5 +3,5 @@ export type Product = {
   name: string;
   price: number;
   stock: number;
-  lowStockLimit: number;
+  low_stock_limit: number;
 };
