@@ -16,22 +16,22 @@ export default function Products() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
-const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-useFocusEffect(
-  useCallback(() => {
-    const load = async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("name");
-      if (error) console.log("Supabase error:", error.message);
-      else setProducts(data as Product[]);
-      setLoading(false);
-    };
-    load();
-  }, [])
-);
+  useFocusEffect(
+    useCallback(() => {
+      const load = async () => {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .order("name");
+        if (error) console.log("Supabase error:", error.message);
+        else setProducts(data as Product[]);
+        setLoading(false);
+      };
+      load();
+    }, []),
+  );
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
@@ -66,7 +66,15 @@ useFocusEffect(
         renderItem={({ item }) => {
           const isLow = item.stock <= item.low_stock_limit;
           return (
-            <View style={styles.card}>
+            <Pressable
+              style={styles.card}
+              onPress={() =>
+                router.push({
+                  pathname: "/edit-product",
+                  params: { id: item.id },
+                })
+              }
+            >
               <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.price}>Rs. {item.price}</Text>
@@ -74,7 +82,7 @@ useFocusEffect(
               <Text style={[styles.stock, isLow && styles.low]}>
                 Stock: {item.stock}
               </Text>
-            </View>
+            </Pressable>
           );
         }}
       />
