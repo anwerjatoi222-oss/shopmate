@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { supabase } from "../lib/supabase";
 
 type FormState = {
   name: string;
@@ -30,7 +31,14 @@ type FieldProps = {
   keyboardType?: KeyboardTypeOptions;
 };
 
-function Field({ label, value, onChangeText, error, placeholder, keyboardType }: FieldProps) {
+function Field({
+  label,
+  value,
+  onChangeText,
+  error,
+  placeholder,
+  keyboardType,
+}: FieldProps) {
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
@@ -55,6 +63,7 @@ export default function AddProduct() {
     lowStockLimit: "5",
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [saving, setSaving] = useState(false);
 
   const update = (key: keyof FormState) => (text: string) =>
     setForm((prev) => ({ ...prev, [key]: text }));
@@ -78,24 +87,29 @@ export default function AddProduct() {
     return e;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length > 0) return;
 
-    const newProduct = {
+    setSaving(true);
+    const { error } = await supabase.from("products").insert({
       name: form.name.trim(),
       price: Number(form.price),
       stock: Number(form.stock),
-      lowStockLimit: Number(form.lowStockLimit),
-    };
-    console.log("New product:", newProduct);
+      low_stock_limit: Number(form.lowStockLimit),
+    });
+    setSaving(false);
 
-    Alert.alert("Saved", `${newProduct.name} add ho gaya`, [
+    if (error) {
+      Alert.alert("Error", error.message);
+      return;
+    }
+
+    Alert.alert("Saved", `${form.name.trim()} add ho gaya`, [
       { text: "OK", onPress: () => router.back() },
     ]);
   };
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -142,8 +156,14 @@ export default function AddProduct() {
           keyboardType="numeric"
         />
 
-        <Pressable style={styles.button} onPress={handleSave}>
-          <Text style={styles.buttonText}>Save karo</Text>
+        <Pressable
+          style={[styles.button, saving && { opacity: 0.6 }]}
+          onPress={handleSave}
+          disabled={saving}
+        >
+          <Text style={styles.buttonText}>
+            {saving ? "Save ho raha hai..." : "Save karo"}
+          </Text>
         </Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -151,7 +171,12 @@ export default function AddProduct() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6", padding: 16, paddingTop: 56 },
+  container: {
+    flex: 1,
+    backgroundColor: "#f3f4f6",
+    padding: 16,
+    paddingTop: 56,
+  },
   back: { color: "#16a34a", fontSize: 16, marginBottom: 8 },
   heading: { fontSize: 28, fontWeight: "bold", marginBottom: 16 },
   field: { marginBottom: 14 },
