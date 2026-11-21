@@ -44,12 +44,18 @@ export default function Sales() {
           !loading ? <Text style={styles.empty}>Abhi koi sale nahi</Text> : undefined
         }
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.date}>
-              {new Date(item.created_at).toLocaleString()}
-            </Text>
+          <Pressable
+            style={styles.card}
+            onPress={() => router.push({ pathname: "/sale-detail", params: { id: item.id } })}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={styles.date}>
+                {new Date(item.created_at).toLocaleString()}
+              </Text>
+              <Text style={styles.hint}>Tap for details</Text>
+            </View>
             <Text style={styles.total}>Rs. {item.total}</Text>
-          </View>
+          </Pressable>
         )}
       />
     </View>
@@ -71,7 +77,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  date: { color: colors.muted, flex: 1 },
+  date: { color: colors.muted },
+  hint: { color: colors.muted, fontSize: 12, marginTop: 2 },
   total: { fontWeight: "bold", fontSize: 16, color: colors.primary },
   empty: { textAlign: "center", color: colors.muted, marginTop: 24 },
 });
