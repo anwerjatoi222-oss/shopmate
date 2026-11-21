@@ -224,6 +224,14 @@ create or replace view public.low_stock_products as
    from products
   where stock <= low_stock_limit;
 
+-- Required by MVP doc: view should run as invoker so RLS applies correctly.
+-- Verify/apply on live DB:
+--   select relname, reloptions
+--   from pg_class c join pg_namespace n on n.oid=c.relnamespace
+--   where n.nspname='public' and c.relname='low_stock_products';
+-- If security_invoker is missing:
+-- alter view public.low_stock_products set (security_invoker = true);
+
 -- ---------------------------------------------------------------------------
 -- Functions
 -- ---------------------------------------------------------------------------
@@ -318,5 +326,22 @@ as $function$
       (select count(*) from products where stock <= low_stock_limit)
   )
 $function$;
+
+-- ---------------------------------------------------------------------------
+-- Auth trigger (NOT EXPORTED - lives in auth schema; verify/apply on live DB)
+-- ---------------------------------------------------------------------------
+
+-- Verify:
+--   select tgname, pg_get_triggerdef(t.oid, true)
+--   from pg_trigger t
+--   join pg_class c on c.oid = t.tgrelid
+--   join pg_namespace n on n.oid = c.relnamespace
+--   where n.nspname = 'auth' and c.relname = 'users' and not t.tgisinternal;
+--
+-- Expected fix if missing (run in Supabase SQL Editor):
+--   drop trigger if exists on_auth_user_created on auth.users;
+--   create trigger on_auth_user_created
+--     after insert on auth.users
+--     for each row execute function public.handle_new_user();
 
 commit;
