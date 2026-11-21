@@ -42,7 +42,7 @@ export default function EditProduct() {
       setLoading(false);
     };
     load();
-  }, [id]);
+  }, [id, router]);
 
   const set = (key: keyof Form) => (text: string) =>
     setForm((prev) => ({ ...prev, [key]: text }));
