@@ -16,10 +16,10 @@ export default function Register() {
 
   const handleRegister = async () => {
     if (!fullName.trim() || !shopName.trim() || !email.trim()) {
-      return Alert.alert("Galat data", "Saari fields bharo");
+      return Alert.alert("Missing information", "Please fill in all fields.");
     }
     if (password.length < 6) {
-      return Alert.alert("Galat data", "Password kam az kam 6 characters ka ho");
+      return Alert.alert("Weak password", "Password must be at least 6 characters.");
     }
     setBusy(true);
     const { error } = await supabase.auth.signUp({
@@ -30,18 +30,18 @@ export default function Register() {
       },
     });
     setBusy(false);
-    if (error) Alert.alert("Register nahi hua", error.message);
+    if (error) Alert.alert("Registration failed", error.message);
   };
 
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.hero}>
-        <Text style={styles.title}>Naya Account</Text>
-        <Text style={styles.sub}>Apni dukaan ka digital record shuru karein</Text>
+        <Text style={styles.title}>Create account</Text>
+        <Text style={styles.sub}>Set up your shop and start tracking sales</Text>
       </View>
 
-      <FormField label="Aapka naam" value={fullName} onChangeText={setFullName} placeholder="Aapka naam" />
-      <FormField label="Dukaan ka naam" value={shopName} onChangeText={setShopName} placeholder="Dukaan ka naam" />
+      <FormField label="Full name" value={fullName} onChangeText={setFullName} placeholder="Your name" />
+      <FormField label="Shop name" value={shopName} onChangeText={setShopName} placeholder="Your shop name" />
       <FormField
         label="Email"
         value={email}
@@ -54,18 +54,18 @@ export default function Register() {
         label="Password"
         value={password}
         onChangeText={setPassword}
-        placeholder="Kam az kam 6 characters"
+        placeholder="At least 6 characters"
         secureTextEntry
       />
 
       <AppButton
-        title={busy ? "Ruko..." : "Register karo"}
+        title={busy ? "Creating account..." : "Create account"}
         onPress={handleRegister}
         disabled={busy}
       />
 
       <Link href="/login" style={styles.link}>
-        Pehle se account hai? Login karo
+        Already have an account? Sign in
       </Link>
     </Screen>
   );
@@ -76,5 +76,11 @@ const styles = StyleSheet.create({
   hero: { marginBottom: spacing.xl, alignItems: "center" },
   title: { fontSize: 32, fontWeight: "bold", color: colors.text },
   sub: { color: colors.muted, marginTop: spacing.xs, fontSize: 15, textAlign: "center" },
-  link: { color: colors.primary, textAlign: "center", marginTop: spacing.lg, fontSize: 15, fontWeight: "500" },
+  link: {
+    color: colors.primary,
+    textAlign: "center",
+    marginTop: spacing.lg,
+    fontSize: 15,
+    fontWeight: "500",
+  },
 });

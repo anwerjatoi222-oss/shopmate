@@ -47,10 +47,10 @@ export default function Products() {
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.heading}>Products</Text>
-          <Text style={styles.sub}>Apni inventory manage karein</Text>
+          <Text style={styles.sub}>Manage your inventory</Text>
         </View>
         <AppButton
-          title="+ Add"
+          title="Add"
           onPress={() => router.push("/add-product")}
           style={styles.addBtn}
         />
@@ -58,7 +58,7 @@ export default function Products() {
 
       <TextInput
         style={styles.input}
-        placeholder="Product search karo..."
+        placeholder="Search products..."
         placeholderTextColor={colors.muted}
         value={search}
         onChangeText={setSearch}
@@ -73,8 +73,8 @@ export default function Products() {
         ListEmptyComponent={
           !loading ? (
             <EmptyState
-              title="Koi product nahi mila"
-              message={search ? "Search badal kar dekhein" : "Pehla product add karein"}
+              title="No products found"
+              message={search ? "Try a different search." : "Add your first product to get started."}
             />
           ) : undefined
         }
@@ -93,7 +93,7 @@ export default function Products() {
                 </View>
                 <View style={styles.stockWrap}>
                   <Text style={[styles.stock, isLow && styles.low]}>
-                    {item.stock === 0 ? "Khatam" : `Stock: ${item.stock}`}
+                    {item.stock === 0 ? "Out of stock" : `Stock: ${item.stock}`}
                   </Text>
                   {isLow ? <Text style={styles.lowLabel}>Low stock</Text> : null}
                 </View>
@@ -116,9 +116,9 @@ const styles = StyleSheet.create({
   },
   heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
   sub: { color: colors.muted, marginTop: 2 },
-  addBtn: { paddingVertical: 10, paddingHorizontal: 14 },
+  addBtn: { paddingVertical: 10, paddingHorizontal: 16 },
   input: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: radius.sm,
     padding: spacing.md,
     fontSize: 16,
@@ -128,7 +128,13 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   listContent: { paddingBottom: spacing.xl },
-  card: { marginBottom: 10, flexDirection: "row", alignItems: "center" },
+  card: {
+    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   name: { fontSize: 16, fontWeight: "600", color: colors.text },
   price: { color: colors.muted, marginTop: 2 },
   stockWrap: { alignItems: "flex-end" },

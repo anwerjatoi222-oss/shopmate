@@ -1,7 +1,7 @@
 import { Pressable, StyleProp, StyleSheet, Text, ViewStyle } from "react-native";
 import { colors, radius } from "../constants/theme";
 
-type Variant = "primary" | "danger" | "outline";
+type Variant = "primary" | "danger" | "outline" | "secondary";
 
 type Props = {
   title: string;
@@ -56,10 +56,16 @@ const variantStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.danger,
   },
+  secondary: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
 });
 
 const textStyles = StyleSheet.create({
   primary: { color: "#fff" },
   danger: { color: "#fff" },
   outline: { color: colors.danger },
+  secondary: { color: colors.text },
 });

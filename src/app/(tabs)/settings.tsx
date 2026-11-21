@@ -12,7 +12,7 @@ export default function Settings() {
   return (
     <Screen>
       <Text style={styles.heading}>Settings</Text>
-      <Text style={styles.sub}>Apni account aur shop settings</Text>
+      <Text style={styles.sub}>Manage your account</Text>
 
       <Card style={styles.card}>
         <Text style={styles.label}>Email</Text>
@@ -21,7 +21,7 @@ export default function Settings() {
 
       <View style={styles.footer}>
         <AppButton
-          title="Logout"
+          title="Log out"
           variant="outline"
           onPress={() => supabase.auth.signOut()}
         />

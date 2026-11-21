@@ -61,7 +61,7 @@ export default function NewSale() {
   const itemCount = Object.keys(cart).length;
 
   const handleSave = async () => {
-    if (itemCount === 0) return Alert.alert("Khali", "Pehle koi product chuno");
+    if (itemCount === 0) return Alert.alert("Empty cart", "Select at least one product.");
     setSaving(true);
     const items = Object.entries(cart).map(([product_id, quantity]) => ({
       product_id,
@@ -69,8 +69,8 @@ export default function NewSale() {
     }));
     const { error } = await supabase.rpc("create_sale", { items });
     setSaving(false);
-    if (error) return Alert.alert("Sale nahi hui", error.message);
-    Alert.alert("Sale ho gayi", `Total: Rs. ${total.toLocaleString()}`, [
+    if (error) return Alert.alert("Sale failed", error.message);
+    Alert.alert("Sale recorded", `Total: Rs. ${total.toLocaleString()}`, [
       { text: "OK", onPress: () => router.back() },
     ]);
   };
@@ -78,14 +78,14 @@ export default function NewSale() {
   return (
     <Screen contentStyle={styles.screenContent}>
       <Pressable onPress={() => router.back()} hitSlop={8}>
-        <Text style={styles.back}>← Wapas</Text>
+        <Text style={styles.back}>← Back</Text>
       </Pressable>
-      <Text style={styles.heading}>Naya Sale</Text>
-      <Text style={styles.sub}>Products chunein aur quantity set karein</Text>
+      <Text style={styles.heading}>New Sale</Text>
+      <Text style={styles.sub}>Select products and set quantities</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Product search karo..."
+        placeholder="Search products..."
         placeholderTextColor={colors.muted}
         value={search}
         onChangeText={setSearch}
@@ -101,8 +101,8 @@ export default function NewSale() {
         ListEmptyComponent={
           !loading ? (
             <EmptyState
-              title="Koi product nahi mila"
-              message="Stock wale products yahan dikhenge"
+              title="No products available"
+              message="Products with stock will appear here."
             />
           ) : undefined
         }
@@ -136,7 +136,7 @@ export default function NewSale() {
           <Text style={styles.totalText}>Rs. {total.toLocaleString()}</Text>
         </View>
         <AppButton
-          title={saving ? "Ruko..." : `Sale save karo (${itemCount})`}
+          title={saving ? "Saving..." : `Save sale (${itemCount})`}
           onPress={handleSave}
           disabled={saving || itemCount === 0}
         />
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
   sub: { color: colors.muted, marginTop: 2, marginBottom: spacing.md },
   input: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: radius.sm,
     padding: spacing.md,
     fontSize: 16,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   listContent: { paddingBottom: spacing.md },
   card: { marginBottom: 10, flexDirection: "row", alignItems: "center" },
-  cardSelected: { borderWidth: 1, borderColor: colors.primary },
+  cardSelected: { borderColor: colors.primary, backgroundColor: "#F0FDF4" },
   name: { fontSize: 16, fontWeight: "600", color: colors.text },
   meta: { color: colors.muted, marginTop: 2 },
   stepper: { flexDirection: "row", alignItems: "center", gap: 10 },
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,

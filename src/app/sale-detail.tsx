@@ -38,7 +38,7 @@ export default function SaleDetail() {
   const [sale, setSale] = useState<Sale | null>(null);
   const [items, setItems] = useState<SaleItem[]>([]);
   const [loading, setLoading] = useState(() => Boolean(id));
-  const [error, setError] = useState<string | null>(() => (id ? null : "Sale ID nahi mili"));
+  const [error, setError] = useState<string | null>(() => (id ? null : "Sale ID not found"));
   const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function SaleDetail() {
       <Screen>
         <View style={styles.center}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Sale detail load ho rahi hai...</Text>
+          <Text style={styles.loadingText}>Loading sale details...</Text>
         </View>
       </Screen>
     );
@@ -109,13 +109,13 @@ export default function SaleDetail() {
     return (
       <Screen>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Text style={styles.back}>← Wapas</Text>
+          <Text style={styles.back}>← Back</Text>
         </Pressable>
-        <Text style={styles.heading}>Sale Detail</Text>
+        <Text style={styles.heading}>Sale Details</Text>
         <Card style={styles.stateCard}>
-          <Text style={styles.errorTitle}>Detail load nahi hui</Text>
-          <Text style={styles.errorText}>{error ?? "Sale nahi mili"}</Text>
-          <AppButton title="Dobara try karo" onPress={retry} style={styles.retryBtn} />
+          <Text style={styles.errorTitle}>Could not load details</Text>
+          <Text style={styles.errorText}>{error ?? "Sale not found"}</Text>
+          <AppButton title="Try again" onPress={retry} style={styles.retryBtn} />
         </Card>
       </Screen>
     );
@@ -124,9 +124,9 @@ export default function SaleDetail() {
   return (
     <Screen>
       <Pressable onPress={() => router.back()} hitSlop={8}>
-        <Text style={styles.back}>← Wapas</Text>
+        <Text style={styles.back}>← Back</Text>
       </Pressable>
-      <Text style={styles.heading}>Sale Detail</Text>
+      <Text style={styles.heading}>Sale Details</Text>
 
       <Card style={styles.summaryCard}>
         <Text style={styles.date}>{new Date(sale.created_at).toLocaleString()}</Text>
@@ -153,8 +153,8 @@ export default function SaleDetail() {
         ListEmptyComponent={
           <Card>
             <EmptyState
-              title="Koi item nahi mila"
-              message="Is sale ke liye items record maujood nahi hain."
+              title="No items found"
+              message="There are no item records for this sale."
             />
           </Card>
         }
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   summaryRow: { flexDirection: "row", gap: spacing.md, marginTop: spacing.lg },
   summaryPill: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     borderRadius: radius.sm,
     padding: spacing.md,
   },

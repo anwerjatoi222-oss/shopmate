@@ -24,7 +24,7 @@ export default function EditProduct() {
         .eq("id", id)
         .single();
       if (error || !data) {
-        Alert.alert("Error", error?.message ?? "Product nahi mila");
+        Alert.alert("Error", error?.message ?? "Product not found");
         router.back();
         return;
       }
@@ -47,9 +47,9 @@ export default function EditProduct() {
     const stock = Number(form.stock);
     const low = Number(form.low);
     if (!form.name.trim() || isNaN(price) || price <= 0)
-      return Alert.alert("Galat data", "Naam aur sahi price zaroori hai");
+      return Alert.alert("Invalid data", "Name and a valid price are required.");
     if (!Number.isInteger(stock) || stock < 0 || !Number.isInteger(low) || low < 0)
-      return Alert.alert("Galat data", "Stock aur limit poore numbers hon");
+      return Alert.alert("Invalid data", "Stock and low stock limit must be whole numbers.");
 
     setSaving(true);
     const { error } = await supabase
@@ -68,8 +68,8 @@ export default function EditProduct() {
   };
 
   const handleDelete = () => {
-    Alert.alert("Delete karein?", `${form.name} hamesha ke liye hat jayega`, [
-      { text: "Nahi", style: "cancel" },
+    Alert.alert("Delete product?", `${form.name} will be permanently removed.`, [
+      { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
@@ -95,24 +95,24 @@ export default function EditProduct() {
   return (
     <Screen scroll>
       <Pressable onPress={() => router.back()} hitSlop={8}>
-        <Text style={styles.back}>← Wapas</Text>
+        <Text style={styles.back}>← Back</Text>
       </Pressable>
-      <Text style={styles.heading}>Product Edit</Text>
-      <Text style={styles.sub}>Details update karein ya product delete karein</Text>
+      <Text style={styles.heading}>Edit Product</Text>
+      <Text style={styles.sub}>Update product details or remove it</Text>
 
-      <FormField label="Naam" value={form.name} onChangeText={set("name")} />
+      <FormField label="Name" value={form.name} onChangeText={set("name")} />
       <FormField label="Price (Rs.)" value={form.price} onChangeText={set("price")} keyboardType="numeric" />
       <FormField label="Stock" value={form.stock} onChangeText={set("stock")} keyboardType="numeric" />
       <FormField label="Low stock limit" value={form.low} onChangeText={set("low")} keyboardType="numeric" />
 
       <AppButton
-        title={saving ? "Save ho raha hai..." : "Update karo"}
+        title={saving ? "Saving..." : "Update product"}
         onPress={handleSave}
         disabled={saving}
         style={styles.button}
       />
       <AppButton
-        title="Product delete karo"
+        title="Delete product"
         variant="outline"
         onPress={handleDelete}
         style={styles.deleteBtn}

@@ -38,7 +38,7 @@ export default function Sales() {
           <Text style={styles.sub}>Recent sales history</Text>
         </View>
         <AppButton
-          title="+ Naya sale"
+          title="New sale"
           onPress={() => router.push("/new-sale")}
           style={styles.addBtn}
         />
@@ -52,7 +52,7 @@ export default function Sales() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           !loading ? (
-            <EmptyState title="Abhi koi sale nahi" message="Pehla sale record karein" />
+            <EmptyState title="No sales yet" message="Record your first sale to see it here." />
           ) : undefined
         }
         renderItem={({ item }) => (
@@ -64,7 +64,7 @@ export default function Sales() {
                 <Text style={styles.date}>
                   {new Date(item.created_at).toLocaleString()}
                 </Text>
-                <Text style={styles.hint}>Details dekhne ke liye tap karein</Text>
+                <Text style={styles.hint}>Tap to view details</Text>
               </View>
               <Text style={styles.total}>Rs. {Number(item.total).toLocaleString()}</Text>
             </Card>
@@ -85,9 +85,14 @@ const styles = StyleSheet.create({
   },
   heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
   sub: { color: colors.muted, marginTop: 2 },
-  addBtn: { paddingVertical: 10, paddingHorizontal: 14 },
+  addBtn: { paddingVertical: 10, paddingHorizontal: 16 },
   listContent: { paddingBottom: spacing.xl },
-  card: { marginBottom: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  card: {
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   date: { color: colors.text, fontWeight: "500" },
   hint: { color: colors.muted, fontSize: 12, marginTop: 2 },
   total: { fontWeight: "bold", fontSize: 16, color: colors.primary },

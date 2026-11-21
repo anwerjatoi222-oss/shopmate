@@ -60,12 +60,12 @@ export default function Dashboard() {
   return (
     <Screen scroll>
       <Text style={styles.heading}>Dashboard</Text>
-      <Text style={styles.sub}>Aaj ki dukaan ka haal</Text>
+      <Text style={styles.sub}>Today’s shop overview</Text>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <Card style={styles.heroCard}>
-        <Text style={styles.label}>Aaj ki sale</Text>
+        <Text style={styles.label}>Today’s sales</Text>
         <Text style={styles.heroValue}>
           Rs. {Number(stats?.today_sales ?? 0).toLocaleString()}
         </Text>
@@ -94,15 +94,15 @@ export default function Dashboard() {
         </Pressable>
       </View>
 
-      <AppButton title="+ Naya sale" onPress={() => router.push("/new-sale")} />
+      <AppButton title="New sale" onPress={() => router.push("/new-sale")} />
 
       <Text style={styles.sectionTitle}>Low stock alerts</Text>
 
       {lowStock.length === 0 ? (
         <Card>
           <EmptyState
-            title="Sab products ka stock theek hai"
-            message="Jab stock limit se neeche jayega, yahan alert dikhega"
+            title="All products are well stocked"
+            message="When stock falls below the limit, alerts will appear here."
           />
         </Card>
       ) : (
@@ -120,7 +120,7 @@ export default function Dashboard() {
               </View>
               <View style={styles.alertBadge}>
                 <Text style={styles.alertStock}>
-                  {p.stock === 0 ? "Khatam" : `${p.stock} bacha`}
+                  {p.stock === 0 ? "Out of stock" : `${p.stock} left`}
                 </Text>
               </View>
             </Card>
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   alertName: { fontSize: 16, fontWeight: "600", color: colors.text },
   alertSub: { color: colors.muted, marginTop: 2 },
   alertBadge: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: colors.dangerSoft,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: radius.sm,

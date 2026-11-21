@@ -31,19 +31,19 @@ export default function AddProduct() {
 
   const validate = (): FormErrors => {
     const e: FormErrors = {};
-    if (!form.name.trim()) e.name = "Product ka naam zaroori hai";
+    if (!form.name.trim()) e.name = "Product name is required";
 
     const price = Number(form.price);
     if (!form.price.trim() || isNaN(price) || price <= 0)
-      e.price = "Sahi price likho (0 se zyada)";
+      e.price = "Enter a valid price greater than 0";
 
     const stock = Number(form.stock);
     if (!form.stock.trim() || !Number.isInteger(stock) || stock < 0)
-      e.stock = "Stock poora number ho (0 ya zyada)";
+      e.stock = "Stock must be a whole number (0 or more)";
 
     const limit = Number(form.lowStockLimit);
     if (!form.lowStockLimit.trim() || !Number.isInteger(limit) || limit < 0)
-      e.lowStockLimit = "Low stock limit poora number ho";
+      e.lowStockLimit = "Low stock limit must be a whole number";
 
     return e;
   };
@@ -67,7 +67,7 @@ export default function AddProduct() {
       return;
     }
 
-    Alert.alert("Saved", `${form.name.trim()} add ho gaya`, [
+    Alert.alert("Saved", `${form.name.trim()} has been added.`, [
       { text: "OK", onPress: () => router.back() },
     ]);
   };
@@ -75,13 +75,13 @@ export default function AddProduct() {
   return (
     <Screen scroll>
       <Pressable onPress={() => router.back()} hitSlop={8}>
-        <Text style={styles.back}>← Wapas</Text>
+        <Text style={styles.back}>← Back</Text>
       </Pressable>
-      <Text style={styles.heading}>Naya Product</Text>
-      <Text style={styles.sub}>Product ki details darj karein</Text>
+      <Text style={styles.heading}>Add Product</Text>
+      <Text style={styles.sub}>Enter product details</Text>
 
       <FormField
-        label="Naam"
+        label="Name"
         value={form.name}
         onChangeText={update("name")}
         error={errors.name}
@@ -96,7 +96,7 @@ export default function AddProduct() {
         keyboardType="numeric"
       />
       <FormField
-        label="Stock (miqdar)"
+        label="Stock quantity"
         value={form.stock}
         onChangeText={update("stock")}
         error={errors.stock}
@@ -112,7 +112,7 @@ export default function AddProduct() {
       />
 
       <AppButton
-        title={saving ? "Save ho raha hai..." : "Save karo"}
+        title={saving ? "Saving..." : "Save product"}
         onPress={handleSave}
         disabled={saving}
         style={styles.button}

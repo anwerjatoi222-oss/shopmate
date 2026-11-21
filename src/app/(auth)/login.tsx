@@ -14,7 +14,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!email.trim() || !password) {
-      return Alert.alert("Galat data", "Email aur password likho");
+      return Alert.alert("Missing information", "Please enter your email and password.");
     }
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({
@@ -22,14 +22,14 @@ export default function Login() {
       password,
     });
     setBusy(false);
-    if (error) Alert.alert("Login nahi hua", error.message);
+    if (error) Alert.alert("Login failed", error.message);
   };
 
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.hero}>
         <Text style={styles.title}>ShopMate</Text>
-        <Text style={styles.sub}>Apne account mein login karo</Text>
+        <Text style={styles.sub}>Sign in to manage your shop</Text>
       </View>
 
       <FormField
@@ -44,18 +44,18 @@ export default function Login() {
         label="Password"
         value={password}
         onChangeText={setPassword}
-        placeholder="Apna password"
+        placeholder="Enter your password"
         secureTextEntry
       />
 
       <AppButton
-        title={busy ? "Ruko..." : "Login"}
+        title={busy ? "Signing in..." : "Sign in"}
         onPress={handleLogin}
         disabled={busy}
       />
 
       <Link href="/register" style={styles.link}>
-        Naya account banao
+        Create an account
       </Link>
     </Screen>
   );
@@ -66,5 +66,11 @@ const styles = StyleSheet.create({
   hero: { marginBottom: spacing.xl, alignItems: "center" },
   title: { fontSize: 36, fontWeight: "bold", color: colors.primary },
   sub: { color: colors.muted, marginTop: spacing.xs, fontSize: 15 },
-  link: { color: colors.primary, textAlign: "center", marginTop: spacing.lg, fontSize: 15, fontWeight: "500" },
+  link: {
+    color: colors.primary,
+    textAlign: "center",
+    marginTop: spacing.lg,
+    fontSize: 15,
+    fontWeight: "500",
+  },
 });
