@@ -9,6 +9,11 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { AppButton } from "../../components/AppButton";
+import { Card } from "../../components/Card";
+import { EmptyState } from "../../components/EmptyState";
+import { Screen } from "../../components/Screen";
+import { colors, radius, spacing } from "../../constants/theme";
 import { supabase } from "../../lib/supabase";
 import { Product } from "../../types/product";
 
@@ -38,97 +43,96 @@ export default function Products() {
   );
 
   return (
-    <View style={styles.container}>
+    <Screen>
       <View style={styles.headerRow}>
-        <Text style={styles.heading}>Products</Text>
-        <Pressable
-          style={styles.addBtn}
+        <View>
+          <Text style={styles.heading}>Products</Text>
+          <Text style={styles.sub}>Apni inventory manage karein</Text>
+        </View>
+        <AppButton
+          title="+ Add"
           onPress={() => router.push("/add-product")}
-        >
-          <Text style={styles.addBtnText}>+ Add</Text>
-        </Pressable>
+          style={styles.addBtn}
+        />
       </View>
 
       <TextInput
         style={styles.input}
         placeholder="Product search karo..."
+        placeholderTextColor={colors.muted}
         value={search}
         onChangeText={setSearch}
       />
-      {loading && <ActivityIndicator size="large" color="#16a34a" />}
+
+      {loading ? <ActivityIndicator size="large" color={colors.primary} /> : null}
 
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
         ListEmptyComponent={
-          <Text style={styles.empty}>Koi product nahi mila</Text>
+          !loading ? (
+            <EmptyState
+              title="Koi product nahi mila"
+              message={search ? "Search badal kar dekhein" : "Pehla product add karein"}
+            />
+          ) : undefined
         }
         renderItem={({ item }) => {
           const isLow = item.stock <= item.low_stock_limit;
           return (
             <Pressable
-              style={styles.card}
               onPress={() =>
-                router.push({
-                  pathname: "/edit-product",
-                  params: { id: item.id },
-                })
+                router.push({ pathname: "/edit-product", params: { id: item.id } })
               }
             >
-              <View style={{ flex: 1 }}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.price}>Rs. {item.price}</Text>
-              </View>
-              <Text style={[styles.stock, isLow && styles.low]}>
-                Stock: {item.stock}
-              </Text>
+              <Card style={styles.card}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.price}>Rs. {Number(item.price).toLocaleString()}</Text>
+                </View>
+                <View style={styles.stockWrap}>
+                  <Text style={[styles.stock, isLow && styles.low]}>
+                    {item.stock === 0 ? "Khatam" : `Stock: ${item.stock}`}
+                  </Text>
+                  {isLow ? <Text style={styles.lowLabel}>Low stock</Text> : null}
+                </View>
+              </Card>
             </Pressable>
           );
         }}
       />
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f3f4f6",
-    padding: 16,
-    paddingTop: 56,
-  },
-  heading: { fontSize: 28, fontWeight: "bold", marginBottom: 12 },
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  name: { fontSize: 16, fontWeight: "600" },
-  price: { color: "#6b7280", marginTop: 2 },
-  stock: { fontWeight: "600", color: "#16a34a" },
-  low: { color: "#dc2626" },
-  empty: { textAlign: "center", color: "#6b7280", marginTop: 24 },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
+    alignItems: "flex-start",
+    marginBottom: spacing.md,
+    gap: spacing.md,
   },
-  addBtn: {
-    backgroundColor: "#16a34a",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
+  heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
+  sub: { color: colors.muted, marginTop: 2 },
+  addBtn: { paddingVertical: 10, paddingHorizontal: 14 },
+  input: {
+    backgroundColor: colors.card,
+    borderRadius: radius.sm,
+    padding: spacing.md,
+    fontSize: 16,
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    color: colors.text,
   },
-  addBtnText: { color: "#fff", fontWeight: "600" },
+  listContent: { paddingBottom: spacing.xl },
+  card: { marginBottom: 10, flexDirection: "row", alignItems: "center" },
+  name: { fontSize: 16, fontWeight: "600", color: colors.text },
+  price: { color: colors.muted, marginTop: 2 },
+  stockWrap: { alignItems: "flex-end" },
+  stock: { fontWeight: "600", color: colors.primary },
+  low: { color: colors.danger },
+  lowLabel: { color: colors.danger, fontSize: 12, marginTop: 2 },
 });

@@ -1,7 +1,11 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, radius, spacing } from "../../constants/theme";
+import { AppButton } from "../../components/AppButton";
+import { Card } from "../../components/Card";
+import { EmptyState } from "../../components/EmptyState";
+import { Screen } from "../../components/Screen";
+import { colors, spacing } from "../../constants/theme";
 import { supabase } from "../../lib/supabase";
 import { Sale } from "../../types/sales";
 
@@ -27,58 +31,64 @@ export default function Sales() {
   );
 
   return (
-    <View style={styles.container}>
+    <Screen>
       <View style={styles.headerRow}>
-        <Text style={styles.heading}>Sales</Text>
-        <Pressable style={styles.addBtn} onPress={() => router.push("/new-sale")}>
-          <Text style={styles.addBtnText}>+ Naya sale</Text>
-        </Pressable>
+        <View>
+          <Text style={styles.heading}>Sales</Text>
+          <Text style={styles.sub}>Recent sales history</Text>
+        </View>
+        <AppButton
+          title="+ Naya sale"
+          onPress={() => router.push("/new-sale")}
+          style={styles.addBtn}
+        />
       </View>
 
-      {loading && <ActivityIndicator size="large" color={colors.primary} />}
+      {loading ? <ActivityIndicator size="large" color={colors.primary} /> : null}
 
       <FlatList
         data={sales}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
         ListEmptyComponent={
-          !loading ? <Text style={styles.empty}>Abhi koi sale nahi</Text> : undefined
+          !loading ? (
+            <EmptyState title="Abhi koi sale nahi" message="Pehla sale record karein" />
+          ) : undefined
         }
         renderItem={({ item }) => (
           <Pressable
-            style={styles.card}
             onPress={() => router.push({ pathname: "/sale-detail", params: { id: item.id } })}
           >
-            <View style={{ flex: 1 }}>
-              <Text style={styles.date}>
-                {new Date(item.created_at).toLocaleString()}
-              </Text>
-              <Text style={styles.hint}>Tap for details</Text>
-            </View>
-            <Text style={styles.total}>Rs. {item.total}</Text>
+            <Card style={styles.card}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.date}>
+                  {new Date(item.created_at).toLocaleString()}
+                </Text>
+                <Text style={styles.hint}>Details dekhne ke liye tap karein</Text>
+              </View>
+              <Text style={styles.total}>Rs. {Number(item.total).toLocaleString()}</Text>
+            </Card>
           </Pressable>
         )}
       />
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, padding: spacing.lg, paddingTop: 56 },
-  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing.md },
-  heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
-  addBtn: { backgroundColor: colors.primary, paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.sm },
-  addBtnText: { color: "#fff", fontWeight: "600" },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-    marginBottom: 10,
+  headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    marginBottom: spacing.md,
+    gap: spacing.md,
   },
-  date: { color: colors.muted },
+  heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
+  sub: { color: colors.muted, marginTop: 2 },
+  addBtn: { paddingVertical: 10, paddingHorizontal: 14 },
+  listContent: { paddingBottom: spacing.xl },
+  card: { marginBottom: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  date: { color: colors.text, fontWeight: "500" },
   hint: { color: colors.muted, fontSize: 12, marginTop: 2 },
   total: { fontWeight: "bold", fontSize: 16, color: colors.primary },
-  empty: { textAlign: "center", color: colors.muted, marginTop: 24 },
 });

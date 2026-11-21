@@ -1,4 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { AppButton } from "../../components/AppButton";
+import { Card } from "../../components/Card";
+import { Screen } from "../../components/Screen";
+import { colors, spacing } from "../../constants/theme";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 
@@ -6,21 +10,31 @@ export default function Settings() {
   const { session } = useAuth();
 
   return (
-    <View style={styles.container}>
+    <Screen>
       <Text style={styles.heading}>Settings</Text>
-      <Text style={styles.sub}>{session?.user.email}</Text>
+      <Text style={styles.sub}>Apni account aur shop settings</Text>
 
-      <Pressable style={styles.logout} onPress={() => supabase.auth.signOut()}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </Pressable>
-    </View>
+      <Card style={styles.card}>
+        <Text style={styles.label}>Email</Text>
+        <Text style={styles.value}>{session?.user.email ?? "-"}</Text>
+      </Card>
+
+      <View style={styles.footer}>
+        <AppButton
+          title="Logout"
+          variant="outline"
+          onPress={() => supabase.auth.signOut()}
+        />
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6", padding: 16, paddingTop: 56 },
-  heading: { fontSize: 28, fontWeight: "bold" },
-  sub: { color: "#6b7280", marginTop: 8, marginBottom: 24 },
-  logout: { padding: 14, borderRadius: 10, alignItems: "center", borderWidth: 1, borderColor: "#dc2626" },
-  logoutText: { color: "#dc2626", fontSize: 16, fontWeight: "600" },
+  heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
+  sub: { color: colors.muted, marginTop: spacing.xs, marginBottom: spacing.lg },
+  card: { marginBottom: spacing.lg },
+  label: { fontSize: 13, color: colors.muted, marginBottom: 4 },
+  value: { fontSize: 16, color: colors.text, fontWeight: "500" },
+  footer: { marginTop: "auto", paddingBottom: spacing.lg },
 });

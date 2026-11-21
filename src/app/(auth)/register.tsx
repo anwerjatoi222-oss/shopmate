@@ -1,13 +1,10 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-} from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { AppButton } from "../../components/AppButton";
+import { FormField } from "../../components/FormField";
+import { Screen } from "../../components/Screen";
+import { colors, spacing } from "../../constants/theme";
 import { supabase } from "../../lib/supabase";
 
 export default function Register() {
@@ -34,63 +31,50 @@ export default function Register() {
     });
     setBusy(false);
     if (error) Alert.alert("Register nahi hua", error.message);
-    // Kamyab hone par session ban jata hai aur app khud tabs par chali jati hai
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: "#f3f4f6" }}
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Text style={styles.title}>Naya Account</Text>
+    <Screen scroll contentStyle={styles.content}>
+      <View style={styles.hero}>
+        <Text style={styles.title}>Naya Account</Text>
+        <Text style={styles.sub}>Apni dukaan ka digital record shuru karein</Text>
+      </View>
 
-      <TextInput style={styles.input} placeholder="Aapka naam" value={fullName} onChangeText={setFullName} />
-      <TextInput style={styles.input} placeholder="Dukaan ka naam" value={shopName} onChangeText={setShopName} />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
+      <FormField label="Aapka naam" value={fullName} onChangeText={setFullName} placeholder="Aapka naam" />
+      <FormField label="Dukaan ka naam" value={shopName} onChangeText={setShopName} placeholder="Dukaan ka naam" />
+      <FormField
+        label="Email"
         value={email}
         onChangeText={setEmail}
+        placeholder="you@example.com"
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password (6+ characters)"
-        secureTextEntry
+      <FormField
+        label="Password"
         value={password}
         onChangeText={setPassword}
+        placeholder="Kam az kam 6 characters"
+        secureTextEntry
       />
 
-      <Pressable
-        style={[styles.button, busy && { opacity: 0.6 }]}
+      <AppButton
+        title={busy ? "Ruko..." : "Register karo"}
         onPress={handleRegister}
         disabled={busy}
-      >
-        <Text style={styles.buttonText}>{busy ? "Ruko..." : "Register karo"}</Text>
-      </Pressable>
+      />
 
       <Link href="/login" style={styles.link}>
         Pehle se account hai? Login karo
       </Link>
-    </ScrollView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, justifyContent: "center", padding: 24 },
-  title: { fontSize: 30, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    marginBottom: 12,
-  },
-  button: { backgroundColor: "#16a34a", padding: 14, borderRadius: 10, alignItems: "center", marginTop: 4 },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  link: { color: "#16a34a", textAlign: "center", marginTop: 20, fontSize: 15 },
+  content: { justifyContent: "center", paddingBottom: spacing.xl },
+  hero: { marginBottom: spacing.xl, alignItems: "center" },
+  title: { fontSize: 32, fontWeight: "bold", color: colors.text },
+  sub: { color: colors.muted, marginTop: spacing.xs, fontSize: 15, textAlign: "center" },
+  link: { color: colors.primary, textAlign: "center", marginTop: spacing.lg, fontSize: 15, fontWeight: "500" },
 });

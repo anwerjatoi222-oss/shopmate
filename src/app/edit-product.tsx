@@ -1,15 +1,10 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { AppButton } from "../components/AppButton";
+import { FormField } from "../components/FormField";
+import { Screen } from "../components/Screen";
+import { colors, spacing } from "../constants/theme";
 import { supabase } from "../lib/supabase";
 
 type Form = { name: string; price: string; stock: string; low: string };
@@ -89,67 +84,48 @@ export default function EditProduct() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#16a34a" />
-      </View>
+      <Screen>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </Screen>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 40 }}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Pressable onPress={() => router.back()}>
+    <Screen scroll>
+      <Pressable onPress={() => router.back()} hitSlop={8}>
         <Text style={styles.back}>← Wapas</Text>
       </Pressable>
       <Text style={styles.heading}>Product Edit</Text>
+      <Text style={styles.sub}>Details update karein ya product delete karein</Text>
 
-      <Text style={styles.label}>Naam</Text>
-      <TextInput style={styles.input} value={form.name} onChangeText={set("name")} />
+      <FormField label="Naam" value={form.name} onChangeText={set("name")} />
+      <FormField label="Price (Rs.)" value={form.price} onChangeText={set("price")} keyboardType="numeric" />
+      <FormField label="Stock" value={form.stock} onChangeText={set("stock")} keyboardType="numeric" />
+      <FormField label="Low stock limit" value={form.low} onChangeText={set("low")} keyboardType="numeric" />
 
-      <Text style={styles.label}>Price (Rs.)</Text>
-      <TextInput style={styles.input} value={form.price} onChangeText={set("price")} keyboardType="numeric" />
-
-      <Text style={styles.label}>Stock</Text>
-      <TextInput style={styles.input} value={form.stock} onChangeText={set("stock")} keyboardType="numeric" />
-
-      <Text style={styles.label}>Low stock limit</Text>
-      <TextInput style={styles.input} value={form.low} onChangeText={set("low")} keyboardType="numeric" />
-
-      <Pressable
-        style={[styles.button, saving && { opacity: 0.6 }]}
+      <AppButton
+        title={saving ? "Save ho raha hai..." : "Update karo"}
         onPress={handleSave}
         disabled={saving}
-      >
-        <Text style={styles.buttonText}>{saving ? "Save ho raha hai..." : "Update karo"}</Text>
-      </Pressable>
-
-      <Pressable style={styles.deleteBtn} onPress={handleDelete}>
-        <Text style={styles.deleteText}>Product delete karo</Text>
-      </Pressable>
-    </ScrollView>
+        style={styles.button}
+      />
+      <AppButton
+        title="Product delete karo"
+        variant="outline"
+        onPress={handleDelete}
+        style={styles.deleteBtn}
+      />
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  container: { flex: 1, backgroundColor: "#f3f4f6", padding: 16, paddingTop: 56 },
-  back: { color: "#16a34a", fontSize: 16, marginBottom: 8 },
-  heading: { fontSize: 28, fontWeight: "bold", marginBottom: 16 },
-  label: { fontSize: 14, fontWeight: "600", color: "#374151", marginBottom: 6 },
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    marginBottom: 14,
-  },
-  button: { backgroundColor: "#16a34a", padding: 14, borderRadius: 10, alignItems: "center", marginTop: 8 },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  deleteBtn: { padding: 14, borderRadius: 10, alignItems: "center", marginTop: 12, borderWidth: 1, borderColor: "#dc2626" },
-  deleteText: { color: "#dc2626", fontSize: 16, fontWeight: "600" },
+  back: { color: colors.primary, fontSize: 16, marginBottom: spacing.sm },
+  heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
+  sub: { color: colors.muted, marginTop: 2, marginBottom: spacing.lg },
+  button: { marginTop: spacing.sm },
+  deleteBtn: { marginTop: spacing.md },
 });

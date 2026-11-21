@@ -10,6 +10,10 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { AppButton } from "../components/AppButton";
+import { Card } from "../components/Card";
+import { EmptyState } from "../components/EmptyState";
+import { Screen } from "../components/Screen";
 import { colors, radius, spacing } from "../constants/theme";
 import { supabase } from "../lib/supabase";
 import { Product } from "../types/product";
@@ -51,8 +55,7 @@ export default function NewSale() {
   };
 
   const total = useMemo(
-    () =>
-      products.reduce((sum, p) => sum + p.price * (cart[p.id] ?? 0), 0),
+    () => products.reduce((sum, p) => sum + p.price * (cart[p.id] ?? 0), 0),
     [products, cart]
   );
   const itemCount = Object.keys(cart).length;
@@ -67,95 +70,101 @@ export default function NewSale() {
     const { error } = await supabase.rpc("create_sale", { items });
     setSaving(false);
     if (error) return Alert.alert("Sale nahi hui", error.message);
-    Alert.alert("Sale ho gayi", `Total: Rs. ${total}`, [
+    Alert.alert("Sale ho gayi", `Total: Rs. ${total.toLocaleString()}`, [
       { text: "OK", onPress: () => router.back() },
     ]);
   };
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => router.back()}>
+    <Screen contentStyle={styles.screenContent}>
+      <Pressable onPress={() => router.back()} hitSlop={8}>
         <Text style={styles.back}>← Wapas</Text>
       </Pressable>
       <Text style={styles.heading}>Naya Sale</Text>
+      <Text style={styles.sub}>Products chunein aur quantity set karein</Text>
 
       <TextInput
         style={styles.input}
         placeholder="Product search karo..."
+        placeholderTextColor={colors.muted}
         value={search}
         onChangeText={setSearch}
       />
 
-      {loading && <ActivityIndicator size="large" color={colors.primary} />}
+      {loading ? <ActivityIndicator size="large" color={colors.primary} /> : null}
 
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
         keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.listContent}
         ListEmptyComponent={
-          !loading ? <Text style={styles.empty}>Koi product nahi (stock 0 ya khali)</Text> : undefined
+          !loading ? (
+            <EmptyState
+              title="Koi product nahi mila"
+              message="Stock wale products yahan dikhenge"
+            />
+          ) : undefined
         }
         renderItem={({ item }) => {
           const qty = cart[item.id] ?? 0;
           return (
-            <View style={styles.card}>
+            <Card style={[styles.card, qty > 0 && styles.cardSelected]}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.sub}>
-                  Rs. {item.price} · Stock: {item.stock}
+                <Text style={styles.meta}>
+                  Rs. {Number(item.price).toLocaleString()} · Stock: {item.stock}
                 </Text>
               </View>
               <View style={styles.stepper}>
-                <Pressable style={styles.stepBtn} onPress={() => change(item, -1)}>
+                <Pressable style={styles.stepBtn} onPress={() => change(item, -1)} hitSlop={4}>
                   <Text style={styles.stepText}>−</Text>
                 </Pressable>
                 <Text style={styles.qty}>{qty}</Text>
-                <Pressable style={styles.stepBtn} onPress={() => change(item, 1)}>
+                <Pressable style={styles.stepBtn} onPress={() => change(item, 1)} hitSlop={4}>
                   <Text style={styles.stepText}>+</Text>
                 </Pressable>
               </View>
-            </View>
+            </Card>
           );
         }}
       />
 
       <View style={styles.footer}>
-        <Text style={styles.totalText}>Total: Rs. {total}</Text>
-        <Pressable
-          style={[styles.saveBtn, (saving || itemCount === 0) && { opacity: 0.5 }]}
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Total</Text>
+          <Text style={styles.totalText}>Rs. {total.toLocaleString()}</Text>
+        </View>
+        <AppButton
+          title={saving ? "Ruko..." : `Sale save karo (${itemCount})`}
           onPress={handleSave}
           disabled={saving || itemCount === 0}
-        >
-          <Text style={styles.saveText}>
-            {saving ? "Ruko..." : `Sale save karo (${itemCount})`}
-          </Text>
-        </Pressable>
+        />
       </View>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, padding: spacing.lg, paddingTop: 56 },
+  screenContent: { paddingBottom: 0 },
   back: { color: colors.primary, fontSize: 16, marginBottom: spacing.sm },
-  heading: { fontSize: 28, fontWeight: "bold", color: colors.text, marginBottom: spacing.md },
+  heading: { fontSize: 28, fontWeight: "bold", color: colors.text },
+  sub: { color: colors.muted, marginTop: 2, marginBottom: spacing.md },
   input: {
     backgroundColor: colors.card,
     borderRadius: radius.sm,
     padding: spacing.md,
     fontSize: 16,
     marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    color: colors.text,
   },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-    marginBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  listContent: { paddingBottom: spacing.md },
+  card: { marginBottom: 10, flexDirection: "row", alignItems: "center" },
+  cardSelected: { borderWidth: 1, borderColor: colors.primary },
   name: { fontSize: 16, fontWeight: "600", color: colors.text },
-  sub: { color: colors.muted, marginTop: 2 },
+  meta: { color: colors.muted, marginTop: 2 },
   stepper: { flexDirection: "row", alignItems: "center", gap: 10 },
   stepBtn: {
     width: 34,
@@ -164,12 +173,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  stepText: { fontSize: 20, fontWeight: "bold", color: colors.primary },
-  qty: { minWidth: 20, textAlign: "center", fontSize: 16, fontWeight: "600" },
-  empty: { textAlign: "center", color: colors.muted, marginTop: 24 },
-  footer: { paddingTop: spacing.md, paddingBottom: spacing.lg },
-  totalText: { fontSize: 20, fontWeight: "bold", color: colors.text, marginBottom: spacing.sm },
-  saveBtn: { backgroundColor: colors.primary, padding: 14, borderRadius: radius.sm, alignItems: "center" },
-  saveText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  stepText: { fontSize: 20, fontWeight: "bold", color: colors.primary, lineHeight: 22 },
+  qty: { minWidth: 24, textAlign: "center", fontSize: 16, fontWeight: "600", color: colors.text },
+  footer: {
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    backgroundColor: colors.background,
+  },
+  totalRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: spacing.md },
+  totalLabel: { fontSize: 16, color: colors.muted },
+  totalText: { fontSize: 22, fontWeight: "bold", color: colors.text },
 });

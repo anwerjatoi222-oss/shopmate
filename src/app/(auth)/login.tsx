@@ -1,6 +1,10 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { AppButton } from "../../components/AppButton";
+import { FormField } from "../../components/FormField";
+import { Screen } from "../../components/Screen";
+import { colors, spacing } from "../../constants/theme";
 import { supabase } from "../../lib/supabase";
 
 export default function Login() {
@@ -22,55 +26,45 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ShopMate</Text>
-      <Text style={styles.sub}>Apne account mein login karo</Text>
+    <Screen scroll contentStyle={styles.content}>
+      <View style={styles.hero}>
+        <Text style={styles.title}>ShopMate</Text>
+        <Text style={styles.sub}>Apne account mein login karo</Text>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
+      <FormField
+        label="Email"
         value={email}
         onChangeText={setEmail}
+        placeholder="you@example.com"
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
+      <FormField
+        label="Password"
         value={password}
         onChangeText={setPassword}
+        placeholder="Apna password"
+        secureTextEntry
       />
 
-      <Pressable
-        style={[styles.button, busy && { opacity: 0.6 }]}
+      <AppButton
+        title={busy ? "Ruko..." : "Login"}
         onPress={handleLogin}
         disabled={busy}
-      >
-        <Text style={styles.buttonText}>{busy ? "Ruko..." : "Login"}</Text>
-      </Pressable>
+      />
 
       <Link href="/register" style={styles.link}>
         Naya account banao
       </Link>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 24, backgroundColor: "#f3f4f6" },
-  title: { fontSize: 36, fontWeight: "bold", color: "#16a34a", textAlign: "center" },
-  sub: { color: "#6b7280", textAlign: "center", marginBottom: 24, marginTop: 4 },
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    marginBottom: 12,
-  },
-  button: { backgroundColor: "#16a34a", padding: 14, borderRadius: 10, alignItems: "center", marginTop: 4 },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  link: { color: "#16a34a", textAlign: "center", marginTop: 20, fontSize: 15 },
+  content: { justifyContent: "center", paddingBottom: spacing.xl },
+  hero: { marginBottom: spacing.xl, alignItems: "center" },
+  title: { fontSize: 36, fontWeight: "bold", color: colors.primary },
+  sub: { color: colors.muted, marginTop: spacing.xs, fontSize: 15 },
+  link: { color: colors.primary, textAlign: "center", marginTop: spacing.lg, fontSize: 15, fontWeight: "500" },
 });
