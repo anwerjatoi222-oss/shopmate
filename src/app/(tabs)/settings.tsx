@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { AppButton } from "../../components/AppButton";
 import { Card } from "../../components/Card";
@@ -7,6 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 
 export default function Settings() {
+  const router = useRouter();
   const { session } = useAuth();
 
   return (
@@ -18,6 +20,12 @@ export default function Settings() {
         <Text style={styles.label}>Email</Text>
         <Text style={styles.value}>{session?.user.email ?? "-"}</Text>
       </Card>
+
+      <AppButton
+        title="Edit profile"
+        onPress={() => router.push("/settings-edit")}
+        style={styles.editBtn}
+      />
 
       <View style={styles.footer}>
         <AppButton
@@ -37,4 +45,5 @@ const styles = StyleSheet.create({
   label: { fontSize: 13, color: colors.muted, marginBottom: 4 },
   value: { fontSize: 16, color: colors.text, fontWeight: "500" },
   footer: { marginTop: "auto", paddingBottom: spacing.lg },
+  editBtn: { alignSelf: "stretch", marginTop: spacing.md },
 });

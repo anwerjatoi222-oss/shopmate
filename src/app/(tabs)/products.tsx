@@ -83,7 +83,7 @@ export default function Products() {
           return (
             <Pressable
               onPress={() =>
-                router.push({ pathname: "/edit-product", params: { id: item.id } })
+                router.push({ pathname: "/product-detail", params: { id: item.id } })
               }
             >
               <Card style={styles.card}>
