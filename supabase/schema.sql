@@ -3,21 +3,11 @@
 -- Source: Query 1-4 results shared in chat; assembled into readable SQL.
 --
 -- Notes:
--- * This covers public schema objects returned by the export queries.
--- * `handle_new_user()` exists in public, but its trigger on `auth.users`
---   lives in the auth schema and was not included in Query 4 scope. Verify:
---     select tgname, pg_get_triggerdef(t.oid, true)
---     from pg_trigger t join pg_class c on c.oid=t.tgrelid
---     join pg_namespace n on n.oid=c.relnamespace
---     where n.nspname='auth' and not t.tgisinternal;
---   Expected pattern:
---     create trigger on_auth_user_created
---       after insert on auth.users
---       for each row execute function public.handle_new_user();
--- * `low_stock_products` view: doc expects security_invoker=true; verify with:
---     select relname, reloptions from pg_class c
---     join pg_namespace n on n.oid=c.relnamespace
---     where n.nspname='public' and c.relname='low_stock_products';
+-- * This covers public schema objects returned by the export queries, plus
+--   live-DB verification for auth trigger and view security_invoker.
+-- * Verified on 2026-11-21:
+--   - `on_auth_user_created` trigger exists on `auth.users` and executes `handle_new_user()`.
+--   - `public.low_stock_products` has `security_invoker=true`.
 -- * Ordering is adjusted for readability/dependencies; this is a source-of-truth
 --   snapshot, not a blindly-runnable migration on a fresh DB.
 
@@ -224,13 +214,8 @@ create or replace view public.low_stock_products as
    from products
   where stock <= low_stock_limit;
 
--- Required by MVP doc: view should run as invoker so RLS applies correctly.
--- Verify/apply on live DB:
---   select relname, reloptions
---   from pg_class c join pg_namespace n on n.oid=c.relnamespace
---   where n.nspname='public' and c.relname='low_stock_products';
--- If security_invoker is missing:
--- alter view public.low_stock_products set (security_invoker = true);
+-- Verified on live DB: security_invoker=true
+alter view public.low_stock_products set (security_invoker = true);
 
 -- ---------------------------------------------------------------------------
 -- Functions
@@ -328,20 +313,14 @@ as $function$
 $function$;
 
 -- ---------------------------------------------------------------------------
--- Auth trigger (NOT EXPORTED - lives in auth schema; verify/apply on live DB)
+-- Auth trigger (verified on live DB; lives in auth schema)
 -- ---------------------------------------------------------------------------
 
--- Verify:
---   select tgname, pg_get_triggerdef(t.oid, true)
---   from pg_trigger t
---   join pg_class c on c.oid = t.tgrelid
---   join pg_namespace n on n.oid = c.relnamespace
---   where n.nspname = 'auth' and c.relname = 'users' and not t.tgisinternal;
---
--- Expected fix if missing (run in Supabase SQL Editor):
---   drop trigger if exists on_auth_user_created on auth.users;
---   create trigger on_auth_user_created
---     after insert on auth.users
---     for each row execute function public.handle_new_user();
+-- Verified: on_auth_user_created AFTER INSERT ON auth.users
+-- FOR EACH ROW EXECUTE FUNCTION handle_new_user()
+-- Kept commented because it targets auth schema (managed by Supabase):
+-- create trigger on_auth_user_created
+--   after insert on auth.users
+--   for each row execute function public.handle_new_user();
 
 commit;
