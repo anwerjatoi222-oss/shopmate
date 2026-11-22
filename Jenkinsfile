@@ -42,7 +42,8 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'npx expo export --platform web'
+
+                bat 'npx expo export --platform android'
             }
         }
     }
