@@ -1,6 +1,10 @@
 pipeline {
     agent any
-
+    
+    environment {
+        EXPO_PUBLIC_SUPABASE_URL      = 'https://placeholder.supabase.co'
+        EXPO_PUBLIC_SUPABASE_ANON_KEY = 'placeholder-anon-key'
+    }
     options {
         timestamps()
         timeout(time: 20, unit: 'MINUTES')
